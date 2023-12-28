@@ -14,6 +14,7 @@
 
 from io import BufferedIOBase
 from typing import Optional, TYPE_CHECKING
+import time
 
 if TYPE_CHECKING:
     # We need to import this from _typeshed as this is not publicly exposed and
@@ -32,6 +33,8 @@ class BufferableByteStream(BufferedIOBase):
 
     def read(self, size=-1) -> Optional[bytes]:  # type: ignore
         if len(self._byte_chunks) < 1 and not self.__done:
+            # Introduce a small delay to reduce CPU usage
+            time.sleep(0.01)  # Adjust the sleep duration as needed
             raise BlockingIOError("read")
         elif (self.__done and not self._byte_chunks) or self.closed:
             return b""
